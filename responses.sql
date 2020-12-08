@@ -48,7 +48,7 @@ WITH top_products_by_client AS (
 SELECT
      user_id, 
      product_name,
-     ROW_NUMBER() OVER (PARTITION BY company ORDER BY COUNT(transaction_id) desc) AS rank,
+     ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY COUNT(transaction_id) desc) AS rank,
      COUNT(transaction_id)
 FROM
      transactions
