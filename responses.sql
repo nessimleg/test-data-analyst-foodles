@@ -3,7 +3,7 @@
 SELECT 
    COUNT(DISTINCT transaction_id)
 FROM 
-   subventions
+   subventions;
 
 -- How many transactions were entitled to a subsidy per company ?
 
@@ -17,24 +17,30 @@ LEFT JOIN
 GROUP BY 
    transactions.company
 ORDER BY 
-   COUNT(subvention_id) DESC
+   COUNT(subvention_id) DESC;
 
 -- What is the total turnover per client for each offer type ?
- 
-
+   
+WITH discount_by_transaction AS (
 SELECT 
-   company, 
-   offer_type,
-   SUM(amount::int) as total_turnover
+     transaction_id, 
+     SUM(amount) as total_discount
 FROM 
-   transactions
+     subventions
 GROUP BY 
-   company, 
-   offer_type
-ORDER BY 
-   company, 
-   offer_type
-
+     transaction_id)
+      
+SELECT 
+     transactions.company, 
+     transactions.offer_type, 
+     SUM(amount + total_discount) as total_turnover
+FROM 
+     transactions
+LEFT JOIN 
+     discount_by_transaction ON discount_by_transaction.transaction_id=transactions.transaction_id
+GROUP BY 
+      transactions.company, 
+      transactions.offer_type;
 
 -- What are the first two products that each client bought ?
 
@@ -57,4 +63,4 @@ SELECT
 FROM
    top_products_by_client
 WHERE
-    rank<=2
+    rank<=2;
