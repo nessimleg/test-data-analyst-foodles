@@ -31,7 +31,7 @@ GROUP BY
      transaction_id)
       
 SELECT 
-     transactions.company, 
+     transactions.user_id, 
      transactions.offer_type, 
      SUM(amount + total_discount) as total_turnover
 FROM 
@@ -39,24 +39,24 @@ FROM
 LEFT JOIN 
      discount_by_transaction ON discount_by_transaction.transaction_id=transactions.transaction_id
 GROUP BY 
-      transactions.company, 
+      transactions.user_id, 
       transactions.offer_type;
 
 -- What are the first two products that each client bought ?
 
 WITH top_products_by_client AS ( 
 SELECT
-     company, 
+     user_id, 
      product_name,
      ROW_NUMBER() OVER (PARTITION BY company ORDER BY COUNT(transaction_id) desc) AS rank,
      COUNT(transaction_id)
 FROM
      transactions
 GROUP BY
-    company,
+    user_id,
     product_name
 ORDER BY
-     company, 
+     user_id, 
      rank)
 SELECT 
    *
